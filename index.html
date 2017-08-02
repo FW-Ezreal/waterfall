@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+         #box{
+            width:1000px;
+            height: 500px;
+            margin: auto;
+        } 
+        #box ul li{
+            list-style-type: none;
+            width: 225px;
+            background: #fff;
+            float: left;
+            padding: 5px;
+            margin: 5px;
+            box-shadow: 0 0 5px #333;
+        }
+        #box ul li img{
+            width: 225px;
+            transition: 1s
+        }
+
+    </style>
+</head>
+<body>
+    <div id="box">
+        <ul>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+    </div>
+    <script src='jquery.js'></script>
+    <script src="ajax.js"></script>
+    <script>
+        var arr = [];
+        var iPage = 1;
+        Ajax('get','getPics.php',true,addImage,'?cpage=' + iPage);
+        function addImage(data){
+            var val = JSON.parse(data)
+            var len = 20;
+            for(var i = 0; i < 20; i++){
+              arr.push(val[i])
+            }
+            upload()
+        }
+        console.log(arr)
+
+        var i = 0;
+        function create(){
+            var oDiv = document.createElement('div');
+            var oImg = new Image();
+            oImg.src = arr[i%arr.length].image;
+            oImg.style.cssText = "opacity:0;transform:scale(0)";
+            oDiv.appendChild(oImg);
+            getList($("#box ul li")).append(oDiv);
+            (function(oImg){
+					   setTimeout(function(){
+						    oImg.style.cssText = "opacity:1;transform:scale(1)";
+					      },100);
+			      })(oImg)
+        }
+        function getList(obj){
+            var length = obj.length;
+            var h = Infinity;
+            var oLi;
+            for(var i = 0; i < length; i++){
+                if (obj.eq(i).height() < h){
+                    h = obj.eq(i).height();
+                    oLi = obj.eq(i);
+                }
+            }
+            return oLi;
+        }
+        var sum;
+        function upload(){
+            i++;
+            if( i < 20){
+                for(;i < 20;i++){
+                    create();
+                }
+            }else{
+                sum = i;
+                for(;i<sum+5;i++){
+                    create();
+                }
+            }
+        }
+        var scrollH = "";
+        var srollT = "";
+        $(function(){
+            var _height = $(window).height();
+            $(window).scroll(function(){
+                scrollH = document.body.scrollHeight;
+                srollT = document.body.scrollTop;
+                if(_height + srollT + 50 > scrollH){
+                    upload();
+                }
+            })
+        })
+        
+    </script>
+</body>
+</html>
